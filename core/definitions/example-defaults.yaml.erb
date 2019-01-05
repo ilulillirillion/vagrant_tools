@@ -1,0 +1,24 @@
+---
+# file: .../vagrant_tools/core/definitions/example-defaults.yaml
+
+
+box: centos/7
+name: machine
+domain_name: <%= PROVISIONER_HOSTNAME %>.vagrant_tools.example.net
+network_category: private_network
+network_address: dhcp
+shell: bash -l
+base_mac:
+provider: virtualbox
+copy_jobs: []
+sync_jobs: []
+script_jobs: 
+  - source: scripts/linux/configure_root_password.sh
+    args: testpasswd
+  - source: scripts/linux/configure_ssh.sh
+  - source: scripts/linux/configure_nameservers.sh
+shell_jobs: []
+tags: []
+ignore_defaults: []
+iterations: 1
+ansible_playbooks: []

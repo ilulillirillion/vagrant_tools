@@ -1,0 +1,37 @@
+---
+# file: .../vagrant_tools/modules/definitions/example-main.yaml
+
+
+- name: loadbalancer
+  box: trusty/64
+  network_address: 192.168.150.10
+  ansible_playbooks:
+    - site.yaml
+    - loadbalancer.yaml
+
+- name: webserver1
+  network_address: 192.168.150.20
+
+- name: webserver2
+  network_address: 192.168.150.30
+
+- name: defaults-example
+  box: centos/7
+  domain_name: <%= PROVISIONER_HOSTNAME %>.vagrant-tools.example.net
+  network_category: private_network
+  network_address: dhcp
+  shell: bash -l
+  base_mac:
+  provider: virtualbox
+  copy_jobs: []
+  sync_jobs: []
+  script_jobs:
+    - source: scripts/linux/configure_root_password.sh
+      args: testpasswd
+    - source: scripts/linux/configure_ssh.sh
+    - source: scripts/linux/configure_nameservers.sh
+  shell_jobs: []
+  tags: []
+  ignore_defaults: []
+  iterations: 1
+  ansible_playbooks: []

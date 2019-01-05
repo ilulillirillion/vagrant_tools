@@ -1,0 +1,11 @@
+.vagrant
+avalon.log
+modules/definitions/*
+!modules/definitions/example*
+core/definitions/*
+!core/definitions/example*
+config/*.yaml
+!config/*example*
+config/definitions/*
+!config/definitions/example*
+dev
