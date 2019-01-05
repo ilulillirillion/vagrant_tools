@@ -41,7 +41,7 @@ logger = Logger.new(MultiIO.new(STDOUT, log_file), shift_size = 1048576)
 level ||= LOGGER_LEVELS.index ENV['VAGRANT_TOOLS_LOG_LEVEL'] || 'WARN'
 level ||= Logger::WARN
 logger.level = level
-logger.progname = APPLICATION_NAME.downcase
+logger.progname = 'vagrant_tools'
 logger.info("logger initialized with level: <#{logger.level}>")
 
 
@@ -61,6 +61,13 @@ def convert_hash_keys_to_symbols(hash)
 end
     
 
+# Create defaults file from example if defaults is missing
+unless File.file?('core/definitions/defaults.yaml.erb')
+  FileUtils.cp('core/definitions/example-defaults.yaml.erb', 'core/definitions/defaults.yaml.erb')
+  unless File.file?('config/definitions/main.yaml.erb')
+    FileUtils.cp('config/definitions/example-main.yaml.erb', 'config/definitions/main.yaml.erb')
+  end
+end
 
 
 defaults = ERB.new File.read 'core/definitions/defaults.yaml.erb'
@@ -167,7 +174,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         if machine[:network_address] == 'dhcp'
           node.vm.network machine[:network_category], type: 'dhcp'
-          logger.info("[<#{machine[:name]}>]  Machine configured for DHCP with <#{machinge[:network_category]}>")
+          logger.info("[<#{machine[:name]}>]  Machine configured for DHCP with <#{machine[:network_category]}>")
         else
           # Do hacky things to iterate the IP Address
           iteration.times do
@@ -206,7 +213,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         logger.info('[<#{machine[:name]}>]  Machine folder-sync jobs configured')
 
         machine[:script_jobs].each do | job |
-          job[:name] ||= File.basename(job[:source], ".*")
+          logger.debug("[<#{machine[:name]}>] Working on script-job: <#{job}>")
+          # FIXME: this line doesn't work with the symbol source, why?
+          #job[:name] ||= File.basename(job[:source], ".*")
+          job[:name] ||= File.basename(job['source'], ".*")
           if job[:args]
             node.vm.provision :shell, path: job[:source], name: job[:name]
           else
