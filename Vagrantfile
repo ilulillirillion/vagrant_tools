@@ -10,6 +10,7 @@ require 'find'
 require 'logger'
 
 
+# Static configs
 VAGRANTFILE_API_VERSION = '2'
 PROVISIONER_HOSTNAME = Socket.gethostname[/^[^.]+/]
 APPLICATION_NAME = ENV['VAGRANT_TOOLS_APP_NAME'] || 'VAGRANT_TOOLS'
