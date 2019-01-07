@@ -18,6 +18,7 @@ ANSIBLE_ROOT_PATH = '/etc/ansible'
 ANSIBLE_INVENTORY_PATH = ENV['VAGRANT_TOOLS_ANSIBLE_INVENTORY_PATH'] || '/etc/ansible/inventory/vagrant_tools'
 
 
+# Required for logger to print to both file and stdout
 class MultiIO
   def initialize(*targets)
     @targets = targets
@@ -41,6 +42,7 @@ logger = Logger.new(MultiIO.new(STDOUT, log_file), shift_size = 1048576)
 level ||= LOGGER_LEVELS.index ENV['VAGRANT_TOOLS_LOG_LEVEL'] || 'WARN'
 level ||= Logger::WARN
 logger.level = level
+# TODO: parameterize below
 logger.progname = 'vagrant_tools'
 logger.info("logger initialized with level: <#{logger.level}>")
 
@@ -50,7 +52,8 @@ logger.info("Vagrantfile API version: <#{VAGRANTFILE_API_VERSION}>")
 logger.info("Provisioner hostname: <#{PROVISIONER_HOSTNAME}>")
 
 
-
+# When importing hashes from yaml, all keys are strings instead of symbols --
+# in order to have consistent key referencing throughout, requires conversion
 def convert_hash_keys_to_symbols(hash)
   hash.keys.each do | key |
     hash[(key.to_sym rescue key) || key] = hash.delete(key)
